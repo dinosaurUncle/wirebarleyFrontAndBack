@@ -41,8 +41,7 @@
         ></b-form-input>
         </b-form-group>
         <br>
-        <b-button type="button" variant="primary" @click="onSubmit">Submit</b-button> 
-        <b-button type="button" variant="primary" @click="axiosTest">test</b-button>        
+        <b-button type="button" variant="primary" @click="onSubmit">Submit</b-button>  
       </b-form>
       <br>
       <p>{{onResult}}</p>
@@ -50,15 +49,14 @@
   </template>
   
   <script>
-  import axios from 'axios'
+import Vue from 'vue'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+
     export default {
       data() {
         return {
-          form: {
-            email: '',
-            name: '',
-            food: null,
-            checked: [],
+          form: {            
             receipt: null,
             transfer: null,
             exchangeText: '',
@@ -67,33 +65,34 @@
             remittance: 100
           },
           onResult: '',
-          testList: '',
-          transferNations: '',
-          receiptNations: '',
-          foods: [{ text: 'Select One', value: null }, 'Carrots', 'Beans', 'Tomatoes', 'Corn'],
+          testList: [],
+          transferNations: [],
+          receiptNations: [],          
           show: true
         }
       },
       methods: {
          
-        async getExchangeInfo(){
+         async getExchangeInfo(){
           if (this.form.receipt != null && this.form.transfer != null) {
+            this.onResult = null;
             
+            let url = "/exchange/" +  this.form.transfer + "/" + this.form.receipt
+            let getExchangeValue =  await Vue.axios.get(url).then(function(response) {            
+            console.log(response.data.exchangeObj);
+            return response.data.exchangeObj;            
+            }) .catch(function(error){
+              console.log(error);
+            });
+            console.log(getExchangeValue);
+            this.form.exchangeValue = getExchangeValue.exchangeValue;            
             this.form.exchangeText = this.numberWithCommas(this.form.exchangeValue) + this.form.receipt + "/" + this.form.transfer;
-             await axiosTest();
           }          
-        }, 
-        async getExchangeValue() {
-
-        },
-
-        async test123(){
-          alert('test');
-        },
+        },          
 
         numberWithCommas(input){
           input = input.toFixed(2);
-          return input.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          return input.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");          
         },
 
         onSubmit() {
@@ -105,17 +104,18 @@
             alert("송금국가, 수취국가를 선택하세요");
           }
           
-        },  axiosTest(){
-           axios.get("/nation/trans").then((response) => {
-            console.log(response.data.nationList);
-          })
         }
       },
-      async created(){
-          let transferNationList = await axios.get("/nation/trans").then((response) => {
+       async created(){
+        
+          let transferNationList =  await Vue.axios.get("/nation/trans").then(function(response) {            
+            //console.log(response.data.nationList);
             return response.data.nationList;            
-          })          
+          }) .catch(function(error){
+            console.log(error);
+          });
           //
+          console.log(transferNationList);
           let transferNationListValue = new Array();
           let transferNationValueObject = new Object();
           transferNationValueObject.text = "미선택";
@@ -129,8 +129,11 @@
             transferNationListValue[i+1] = transferNationValueObject;
           }            
           this.transferNations = transferNationListValue;
-         let receiptNationList = await axios.get("/nation/receip").then((response) => {
+          
+         let receiptNationList =  await Vue.axios.get("/nation/receip").then(function(response)  {
             return response.data.nationList;            
+          }).catch(function(error){
+            console.log(error);
           })
           let receiptNationListValue = new Array();
           let receiptNationValueObject = new Object();
@@ -145,6 +148,7 @@
             receiptNationListValue[i+1] = receiptNationValueObject;
           }            
           this.receiptNations = receiptNationListValue;
+          
       }
     }
   </script>
