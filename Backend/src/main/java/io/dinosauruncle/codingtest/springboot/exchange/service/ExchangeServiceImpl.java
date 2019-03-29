@@ -41,7 +41,8 @@ public class ExchangeServiceImpl implements ExchangeService {
 	@Override
 	public ExchangeVO getExchangeObj(String transferType, String receiptType) {
 		String combinText = transferType.concat(receiptType);
-		list = new ArrayList<ExchangeVO>();		
+		list = new ArrayList<ExchangeVO>();
+		accessKey = accessKey.trim();
         HttpGet get = new HttpGet(BASE_URL + ENDPOINT + "?access_key=" + accessKey +
         		"&currencies=" + receiptType + "&source=" +transferType);
         try {
