@@ -19,6 +19,9 @@ WebServer: NodeJS<br>
 </h3>
 <br>
 
+## 코딩 문제
+https://github.com/wirebarley/apply/blob/master/coding_test_type_B.md
+
 ## 프로젝트 구조
 프로젝트 구조에 대해서 각 폴더 내 Wiki에서 설명합니다.
 
